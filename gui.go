@@ -1,13 +1,19 @@
 package main
 
 import (
+	"image/color"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"image/color"
 )
+
+type gui struct {
+    win fyne.Window
+    directory *widget.Label
+}
 
 func makeBanner() fyne.CanvasObject {
     toolbar := widget.NewToolbar(
@@ -19,12 +25,13 @@ func makeBanner() fyne.CanvasObject {
     return container.NewStack(toolbar, logo)
 }
 
-func makeGui() fyne.CanvasObject {
+func (g *gui) makeGui() fyne.CanvasObject {
     top := makeBanner()
     left := widget.NewLabel("Left")
     right := widget.NewLabel("Right")
-
-    content := canvas.NewRectangle(color.Gray{Y: 0xee})
+    
+    g.directory = widget.NewLabel("Welcome - Please select a directory . . . ")
+    content := container.NewStack(canvas.NewRectangle(color.Gray{Y: 0xee}), g.directory)
 
     dividers := [3]fyne.CanvasObject{
         widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(),
@@ -33,3 +40,18 @@ func makeGui() fyne.CanvasObject {
     return container.New(newChatLayout(top, left, right, content, dividers), objs...)
 }
 
+func (g *gui) openProject() {
+    dialog.ShowFolderOpen(func(dir fyne.ListableURI, err error) {
+        if err != nil{
+            dialog.ShowError(err, g.win)
+            return
+        }
+        if dir == nil {
+            return
+        }
+        name := dir.Name()
+
+        g.win.SetTitle("Fyne App: " + name)
+        g.directory.SetText(name)
+    }, g.win)
+}

@@ -11,6 +11,18 @@ func main() {
     w := a.NewWindow("Login")
     w.Resize(fyne.NewSize(1024, 768))
     
-    w.SetContent(makeGui())
+    ui := &gui{win: w}
+    w.SetContent(ui.makeGui())
+    w.SetMainMenu(ui.makeMenu())
+
+    ui.openProject()
 	w.ShowAndRun()
+}
+
+func (g *gui) makeMenu() *fyne.MainMenu {
+    file := fyne.NewMenu("File",
+        fyne.NewMenuItem("Open Project", g.openProject),
+    )
+
+    return fyne.NewMainMenu(file)
 }
