@@ -1,7 +1,9 @@
 package main
 
 import (
+	"chat-app/internal/dialogs"
 	"image/color"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -40,18 +42,37 @@ func (g *gui) makeGui() fyne.CanvasObject {
     return container.New(newChatLayout(top, left, right, content, dividers), objs...)
 }
 
-func (g *gui) openProject() {
+func (g *gui) openProjectDialog() {
     dialog.ShowFolderOpen(func(dir fyne.ListableURI, err error) {
-        if err != nil{
+        if err != nil {
             dialog.ShowError(err, g.win)
-            return
         }
         if dir == nil {
             return
         }
+        
+        g.openProject(dir)
+    }, g.win) 
+}
+
+func (g *gui) openProject(dir fyne.ListableURI) {
         name := dir.Name()
 
         g.win.SetTitle("Fyne App: " + name)
         g.directory.SetText(name)
-    }, g.win)
+
 }
+
+func (g *gui) showCreate(w fyne.Window) {
+    intro := widget.NewLabel(`Here you can create a new project!
+
+Or open an existing one that you created earlier.`)
+    
+    open := widget.NewButton("Open Project", g.openProjectDialog)
+    create := widget.NewButton("Create Project", g.showCreateStep)
+
+    buttons := container.NewGridWithColumns(2, open, create)
+    wizard := dialogs.NewWizard("Create Project", home)
+    wizard.Show(w)
+}
+

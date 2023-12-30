@@ -16,6 +16,7 @@ func main() {
     w.SetMainMenu(ui.makeMenu())
 
     ui.openProject()
+    ui.showCreate(w)
 	w.ShowAndRun()
 }
 
