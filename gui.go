@@ -3,11 +3,13 @@ package main
 import (
 	"chat-app/internal/dialogs"
 	"image/color"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
@@ -69,17 +71,36 @@ func (g *gui) showCreate(w fyne.Window) {
 
 Or open an existing one that you created earlier.`)
     
-    open := widget.NewButton("Open Project", g.openProjectDialog)
-    create := widget.NewButton("Create Project", func() {
-        step2 := widget.NewLabel("step 2 content")
-
-        wizard.Push("Step 2", step2)
+    open := widget.NewButton("Open Project", func() {
+        wizard.Hide()
+        g.openProjectDialog()
     })
+    create := widget.NewButton("Create Project", func() {
+        wizard.Push("Step 2", g.makeCreateDetail())
+    })
+    create.Importance = widget.HighImportance
 
     buttons := container.NewGridWithColumns(2, open, create)
     home := container.NewVBox(intro, buttons)
 
     wizard = dialogs.NewWizard("Create Project", home)
     wizard.Show(w)
+    wizard.Resize(home.MinSize().AddWidthHeight(40, 80))  //fyne.NewSize(360,200))
+}
+
+func (g *gui) makeCreateDetail() fyne.CanvasObject {
+    homeDir, _ := os.UserHomeDir()
+    parent := storage.NewFileURI(homeDir)
+    chosen, _ := storage.ListerForURI(parent)
+
+    name := widget.NewEntry()
+    dir := widget.NewButton(chosen.Name(), func() {
+        // TODO open dialog
+    })
+
+    form := widget.NewForm(
+        widget.NewFormItem("Name", name),
+        widget.NewFormItem("Parent Directory", dir),
+    )
 }
 

@@ -49,6 +49,10 @@ func (w *Wizard) Push(title string, content fyne.CanvasObject) {
     w.content.Refresh()
 }
 
+func (w *Wizard) Resize(size fyne.Size) {
+    w.d.Resize(size)
+}
+
 func (w *Wizard) wrap(title string, content fyne.CanvasObject) fyne.CanvasObject {
     nav := container.NewHBox(
         widget.NewButtonWithIcon("", theme.NavigateBackIcon(), w.Pop),
