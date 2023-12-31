@@ -64,15 +64,22 @@ func (g *gui) openProject(dir fyne.ListableURI) {
 }
 
 func (g *gui) showCreate(w fyne.Window) {
+    var wizard *dialogs.Wizard
     intro := widget.NewLabel(`Here you can create a new project!
 
 Or open an existing one that you created earlier.`)
     
     open := widget.NewButton("Open Project", g.openProjectDialog)
-    create := widget.NewButton("Create Project", g.showCreateStep)
+    create := widget.NewButton("Create Project", func() {
+        step2 := widget.NewLabel("step 2 content")
+
+        wizard.Push("Step 2", step2)
+    })
 
     buttons := container.NewGridWithColumns(2, open, create)
-    wizard := dialogs.NewWizard("Create Project", home)
+    home := container.NewVBox(intro, buttons)
+
+    wizard = dialogs.NewWizard("Create Project", home)
     wizard.Show(w)
 }
 
