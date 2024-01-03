@@ -23,7 +23,7 @@ func makeBanner() fyne.CanvasObject {
     toolbar := widget.NewToolbar(
         widget.NewToolbarAction(theme.HomeIcon(), func() {}),
     )
-    logo := canvas.NewImageFromResource(resourceLogoPng)
+    logo := canvas.NewImageFromResource(resourceAssetsLogoPng)
     logo.FillMode = canvas.ImageFillContain
 
     return container.NewStack(toolbar, logo)
@@ -102,5 +102,6 @@ func (g *gui) makeCreateDetail() fyne.CanvasObject {
         widget.NewFormItem("Name", name),
         widget.NewFormItem("Parent Directory", dir),
     )
+    return form
 }
 
