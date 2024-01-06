@@ -50,6 +50,9 @@ func (w *Wizard) Push(title string, content fyne.CanvasObject) {
 }
 
 func (w *Wizard) Resize(size fyne.Size) {
+    if w.d == nil {
+        return
+    }
     w.d.Resize(size)
 }
 

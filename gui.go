@@ -2,6 +2,7 @@ package main
 
 import (
 	"chat-app/internal/dialogs"
+	"errors"
 	"image/color"
 	"os"
 
@@ -76,7 +77,7 @@ Or open an existing one that you created earlier.`)
         g.openProjectDialog()
     })
     create := widget.NewButton("Create Project", func() {
-        wizard.Push("Step 2", g.makeCreateDetail())
+        wizard.Push("Step 2", g.makeCreateDetail(wizard))
     })
     create.Importance = widget.HighImportance
 
@@ -88,19 +89,54 @@ Or open an existing one that you created earlier.`)
     wizard.Resize(home.MinSize().AddWidthHeight(40, 80))  //fyne.NewSize(360,200))
 }
 
-func (g *gui) makeCreateDetail() fyne.CanvasObject {
+func (g *gui) makeCreateDetail(wizard *dialogs.Wizard) fyne.CanvasObject {
     homeDir, _ := os.UserHomeDir()
     parent := storage.NewFileURI(homeDir)
     chosen, _ := storage.ListerForURI(parent)
 
     name := widget.NewEntry()
-    dir := widget.NewButton(chosen.Name(), func() {
-        // TODO open dialog
+    name.Validator = func(in string) error {
+        if in == "" {
+            return errors.New("Project name is required")
+        }
+
+        return nil
+    }
+    var dir *widget.Button
+    dir = widget.NewButton(chosen.Name(), func() {
+        d := dialog.NewFolderOpen(func(l fyne.ListableURI, err error) {
+            if err != nil || l == nil {
+                return
+            }
+
+            chosen = l
+
+            dir.SetText(l.Name())
+        }, g.win)
+
+        d.SetLocation(chosen)
+        d.Show()
     })
 
     form := widget.NewForm(
         widget.NewFormItem("Name", name),
         widget.NewFormItem("Parent Directory", dir),
     )
+
+    form.OnSubmit = func() {
+        if name.Text == "" {
+            return
+        }
+
+        project, err := createProject(name.Text, chosen)
+        if err != nil {
+            dialog.ShowError(err, g.win)
+            return
+        }
+        wizard.Hide()
+        g.openProject(project)
+    }
+
+    return form
 }
 
