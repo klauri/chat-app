@@ -6,4 +6,11 @@ Simple chat application written in Go.
     - GUI framework for desktop application
 - Backend: TBD
 
+## Installation
+
+Enter `$ go generate` in main directory to create asset files.
+
+Run command `$ go run .` to start the application. 
+
+
 
