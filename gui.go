@@ -24,7 +24,7 @@ func makeBanner() fyne.CanvasObject {
     toolbar := widget.NewToolbar(
         widget.NewToolbarAction(theme.HomeIcon(), func() {}),
     )
-    logo := canvas.NewImageFromResource(resourceAssetsLogoPng)
+    logo := canvas.NewImageFromResource(resourceLogoPng)
     logo.FillMode = canvas.ImageFillContain
 
     return container.NewStack(toolbar, logo)
